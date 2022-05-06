@@ -24,22 +24,15 @@
     <div class="paging">
         共{{ totalNum }}条记录
         每页{{ perPage }} 条
-        <span @click="_prevPage" 
-              class="paging__btn" 
-              :class="`paging__btn--${isFirst ? '' : 'active'}`">
-              上一页
+        <span @click="_prevPage" class="paging__btn" :class="`paging__btn--${isFirst ? '' : 'active'}`">
+            上一页
         </span>
-        <span @click="_nextPage" 
-              class="paging__btn" 
-              :class="`paging__btn--${isLast ? '' : 'active'}`">
-              下一页
+        <span @click="_nextPage" class="paging__btn" :class="`paging__btn--${isLast ? '' : 'active'}`">
+            下一页
         </span>
         前往第
-        <input type="text" 
-               class="paging__input"
-               :class="`paging__input--${isValid ? '' : 'error'}`"
-               :value="curIndex" 
-               @input="_setValue($event)"/> 页
+        <input type="text" class="paging__input" :class="`paging__input--${isValid ? '' : 'error'}`" :value="curIndex"
+            @input="_setValue($event)" /> 页
     </div>
 </template>
 
