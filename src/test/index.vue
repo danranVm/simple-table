@@ -1,6 +1,6 @@
 <template>
     <Table :data="data" :columns="columns">
-        <template #a="{ content }" :pp="777">
+        <template #a="{ content }">
             {{ content.a }}
         </template>
         <template #b="{ content }">
@@ -20,10 +20,6 @@
 
 <script setup lang="ts">
 import Table from '@components/table.vue'
-
-/**
-* @file test
-*/
 
 const data = [
     {
