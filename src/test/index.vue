@@ -1,6 +1,6 @@
 <template>
     <Table :data="data" :columns="columns">
-        <template #a="{ content }">
+        <template #a="{ content }" :pp="777">
             {{ content.a }}
         </template>
         <template #b="{ content }">
@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import Table from '@components/table/index.vue'
+import Table from '@components/table.vue'
 
 /**
-* @file
+* @file test
 */
 
 const data = [
@@ -57,18 +57,23 @@ const columns = [
     {
         title: '数据1',
         key: 'a',
+        // sort: true
     }, {
         title: '数据2',
         key: 'b',
+        sort: true
     }, {
         title: '数据3',
         key: 'c',
+        sort: true
     },{
         title: '数据4',
         key: 'd',
+        sort: true
     },{
         title: '数据5',
         key: 'e',
+        sort: false
     }
 ]
 
