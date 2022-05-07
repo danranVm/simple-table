@@ -15,39 +15,37 @@
         <template #e="{ content }">
             {{ content.e }}
         </template>
+        <template #f="{ content }">
+            {{ content.f }}
+        </template>
+        <template #g="{ content }">
+            {{ content.g }}
+        </template>
+        <template #h="{ content }">
+            {{ content.h }}
+        </template>
+        <template #i="{ content }">
+            {{ content.i }}
+        </template>
     </Table>
 </template>
 
 <script setup lang="ts">
 import Table from '@components/table.vue'
 
-const data = [
-    {
-        a: 123, b: 456, c: 789, d: 0, e: 88
-    }, {
-        a: 454, b: 5445, c: 774, d: 0, e: 488
-    }, {
-        a: 877, b: 14, c: 987, d: 0, e: 488
-    },{
-        a: 123, b: 456, c: 789, d: 0, e: 88
-    }, {
-        a: 454, b: 5445, c: 774, d: 0, e: 488
-    }, {
-        a: 877, b: 14, c: 987, d: 0, e: 488
-    },{
-        a: 123, b: 456, c: 789, d: 0, e: 88
-    }, {
-        a: 454, b: 5445, c: 774, d: 0, e: 488
-    }, {
-        a: 877, b: 14, c: 987, d: 0, e: 488
-    },{
-        a: 123, b: 456, c: 789, d: 0, e: 88
-    }, {
-        a: 454, b: 5445, c: 774, d: 0, e: 488
-    }, {
-        a: 877, b: 14, c: 987, d: 0, e: 488
-    }
-]
+const data = Array.from(Array(17)).map(function (v, i) {
+    return {
+        a: 'a' + i,
+        b: 'b' + i,
+        c: i,
+        d: 'd' + i,
+        e: 'e' + i,
+        f: 'f' + i,
+        g: 'g' + i,
+        h: 'g' + i,
+        i: 'g' + i,
+    };
+})
 
 const columns = [
     {
@@ -62,14 +60,30 @@ const columns = [
         title: '数据3',
         key: 'c',
         sort: true
-    },{
+    }, {
         title: '数据4',
         key: 'd',
         sort: true
-    },{
+    }, {
         title: '数据5',
         key: 'e',
-        sort: false
+        sort: true
+    }, {
+        title: '数据6',
+        key: 'f',
+        sort: true
+    }, {
+        title: '数据7',
+        key: 'g',
+        sort: true
+    }, {
+        title: '数据8',
+        key: 'h',
+        sort: true
+    }, {
+        title: '数据9',
+        key: 'i',
+        sort: true
     }
 ]
 

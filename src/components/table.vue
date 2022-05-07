@@ -73,12 +73,13 @@ const isDefaultDirection = computed(() => {
 
 const curTableData = computed(() => {
     let dataList = isDefaultDirection.value ? originData : tempData;
-    let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
-    let end = start + perPage.value
-    const filterData = dataList.length && dataList.filter((item, index) => {
-        return (index >= start && index <= end)
+    let { data } = _filterByStep(dataList);
+    columnList.forEach(item => {
+        if(item.sortType){
+            sortByKey(data, item.key, item.sortType)
+        }
     })
-    return filterData
+    return data
 })
 
 const _sortBy = (index: number, key: string, sortAble: boolean) => {
@@ -90,7 +91,12 @@ const _sortBy = (index: number, key: string, sortAble: boolean) => {
     columnList.forEach((ele, idx) => {
         ele.sortType = idx === index ? type : 0
     })
-    tempData = type ? sortByKey(tempData, key, type) : [...originData]
+    if (type) {
+        const { data, start, end } = _filterByStep(tempData)
+        tempData = tempData.slice(0, start).concat(sortByKey(data, key, type)).concat(tempData.slice(end, tempData.length))
+    } else {
+        tempData = [...originData]
+    }
 }
 
 const tableStyle = computed(() => {
@@ -98,12 +104,13 @@ const tableStyle = computed(() => {
         height: `${props.defaultHeight}px`
     }
 })
-
 const curIndex = ref(1)
+const perPage = ref(10)
+const isValid = ref(true)
 const totalNum = computed(() => {
     return props.data.length
 })
-const perPage = ref(10)
+
 const isFirst = computed(() => {
     if (!isValid.value) {
         return true
@@ -136,7 +143,19 @@ const _nextPage = () => {
     }
     curIndex.value++
 }
-const isValid = ref(true)
+
+const _filterByStep = (data: any[]) => {
+    let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
+    let end = start + perPage.value
+    let filterData = data.length ? data.filter((item, index) => {
+        return (index >= start && index < end)
+    }) : []
+    return {
+        data: filterData,
+        start,
+        end
+    }
+}
 const _setValue = (e: any) => {
     let numReg = /^[0-9]*$/
     let inputNum = e.target.value
