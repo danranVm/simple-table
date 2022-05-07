@@ -34,16 +34,17 @@
 import Table from '@components/table.vue'
 
 const data = Array.from(Array(47)).map(function (v, i) {
+    let t = i&1 ? 2 : 0
     return {
-        a: 'a' + i,
-        b: 'b' + i,
-        c: i,
-        d: 'd' + i,
-        e: 'e' + i,
-        f: 'f' + i,
-        g: 'g' + i,
-        h: 'g' + i,
-        i: 'g' + i,
+        a: 'a' + (i + t),
+        b: 'b' + (i + t),
+        c: (i + t),
+        d: 'd' + (i + t),
+        e: 'e' + (i + t + 9) ,
+        f: 'f' + (i + t),
+        g: 'g' + (i + t),
+        h: 'g' + (i + t),
+        i: 'g' + (i + t),
     };
 })
 

@@ -52,16 +52,22 @@ const props = withDefaults(defineProps<{
     pagination: true
 })
 
-let originData = props.data
-let tempData = reactive(props.data)
-const columnList = reactive([...props.columns.map((v) => {
+const {
+    data,
+    columns,
+    defaultHeight,
+    pagination
+} = props
+
+let tempData = reactive(data)
+const columnList = reactive(columns.map((v) => {
     v.direction = 0
     // 0: 原， 1: 升， 2: 降
     return v
-})])
+}))
 
 const keyList = computed(() => {
-    const filterKeys = props.columns.map((v) => {
+    const filterKeys = columns.map((v) => {
         return v.key
     })
     return filterKeys
@@ -74,15 +80,15 @@ const isDefaultDirection = computed(() => {
 })
 
 const curTableData = computed(() => {
-    let dataList = isDefaultDirection.value ? originData : tempData;
+    let dataList = isDefaultDirection.value ? data : tempData;
     const { start, end } = step.value
-    let data = props.pagination ? _filterByStep(dataList, start, end) : dataList;
+    let filterData = pagination ? _filterByStep(dataList, start, end) : dataList;
     columnList.forEach(item => {
         if (item.direction) {
-            sortByKey(data, item.key, item.direction)
+            sortByKey(filterData, item.key, item.direction)
         }
     })
-    return data
+    return filterData
 })
 
 const _sortBy = (index: number, key: string, sortAble: boolean) => {
@@ -96,16 +102,16 @@ const _sortBy = (index: number, key: string, sortAble: boolean) => {
     })
     if (type) {
         const { start, end } = step.value
-        let data = _filterByStep(tempData, start, end)
-        tempData = tempData.slice(0, start).concat(sortByKey(data, key, type)).concat(tempData.slice(end, tempData.length))
+        let filterData = _filterByStep(tempData, start, end)
+        tempData = tempData.slice(0, start).concat(sortByKey(filterData, key, type)).concat(tempData.slice(end, tempData.length))
     } else {
-        tempData = [...originData]
+        tempData = data
     }
 }
 
 const tableStyle = computed(() => {
     return {
-        height: `${props.defaultHeight}px`
+        height: `${defaultHeight}px`
     }
 })
 
@@ -113,7 +119,7 @@ const curIndex = ref(1)
 const perPage = ref(10)
 const isValid = ref(true)
 const totalNum = computed(() => {
-    return props.data.length
+    return data.length
 })
 
 const isFirstOrDisabled = computed(() => {
