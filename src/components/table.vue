@@ -21,17 +21,17 @@
             </tr>
         </table>
     </div>
-    <div class="paging" v-if="pagination">
+    <div class="pagination" v-if="pagination">
         共{{ totalNum }}条记录
         每页{{ perPage }} 条
-        <span @click="_prevPage" class="paging__btn" :class="`paging__btn--${isFirst ? '' : 'active'}`">
+        <span @click="_prevPage" class="pagination__btn" :class="`pagination__btn--${isFirstOrDisabled ? '' : 'active'}`">
             上一页
         </span>
-        <span @click="_nextPage" class="paging__btn" :class="`paging__btn--${isLast ? '' : 'active'}`">
+        <span @click="_nextPage" class="pagination__btn" :class="`pagination__btn--${isLastOrDisabled ? '' : 'active'}`">
             下一页
         </span>
         前往第
-        <input type="text" class="paging__input" :class="`paging__input--${isValid ? '' : 'error'}`" :value="curIndex"
+        <input type="text" class="pagination__input" :class="`pagination__input--${isValid ? '' : 'error'}`" :value="curIndex"
             @input="_setValue($event)" /> 页
     </div>
 </template>
@@ -43,16 +43,16 @@ import { sortByKey } from '../utils/common'
 const props = withDefaults(defineProps<{
     data: any[],
     columns: any[],
-    defaultHeight: number,
-    pagination: boolean,
+    defaultHeight?: number,
+    pagination?: boolean,
 }>(), {
     data: () => [],
     columns: () => [],
-    defaultHeight: 250,
+    defaultHeight: 235,
     pagination: true
 })
 
-const originData = [...props.data]
+let originData = props.data
 let tempData = reactive(props.data)
 const columnList = reactive([...props.columns.map((v) => {
     v.direction = 0
@@ -61,7 +61,7 @@ const columnList = reactive([...props.columns.map((v) => {
 })])
 
 const keyList = computed(() => {
-    const filterKeys = props.columns.length && props.columns.map((v) => {
+    const filterKeys = props.columns.map((v) => {
         return v.key
     })
     return filterKeys
@@ -116,19 +116,13 @@ const totalNum = computed(() => {
     return props.data.length
 })
 
-const isFirst = computed(() => {
-    if (!isValid.value) {
-        return true
-    }
+const isFirstOrDisabled = computed(() => {
     // input输入的value是字符型
-    return curIndex.value == 1
+    return !isValid.value || curIndex.value == 1
 })
 
-const isLast = computed(() => {
-    if (!isValid.value) {
-        return true
-    }
-    return curIndex.value == endPage.value
+const isLastOrDisabled = computed(() => {
+    return !isValid.value || curIndex.value == endPage.value
 })
 
 const endPage = computed(() => {
@@ -136,6 +130,7 @@ const endPage = computed(() => {
 })
 
 const step = computed(() => {
+    // 非法输入就重置回第一页
     let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
     let end = start + perPage.value
     return {
@@ -145,25 +140,26 @@ const step = computed(() => {
 })
 
 const _prevPage = () => {
-    if (isFirst.value) {
+    if (isFirstOrDisabled.value) {
         return
     }
     curIndex.value--
 }
 
 const _nextPage = () => {
-    if (isLast.value) {
+    if (isLastOrDisabled.value) {
         return
     }
     curIndex.value++
 }
 
 const _filterByStep = (data: any[], start: number, end: number) => {
-    let filterData = data.length ? data.filter((item, index) => {
+    let filterData = data.filter((item, index) => {
         return (index >= start && index < end)
-    }) : []
+    })
     return filterData
 }
+
 const _setValue = (e: any) => {
     let numReg = /^[0-9]*$/
     let inputNum = e.target.value
@@ -188,7 +184,7 @@ const _setValue = (e: any) => {
 </script>
 <style lang="less" scoped>
 .table {
-    min-height: 250px;
+    min-height: 200px;
 
     &_header {
         width: 100%;
@@ -251,7 +247,7 @@ const _setValue = (e: any) => {
 
 }
 
-.paging {
+.pagination {
     text-align: end;
 
     &__input {
