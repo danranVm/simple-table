@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import Table from '@components/table.vue'
 
-const data = Array.from(Array(17)).map(function (v, i) {
+const data = Array.from(Array(47)).map(function (v, i) {
     return {
         a: 'a' + i,
         b: 'b' + i,

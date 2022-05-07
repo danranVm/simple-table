@@ -6,9 +6,9 @@
                     class="table_header__item" :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
-                        :class="`table_header__item_up--${item.sortType === 1 ? 'active' : ''}`"></span>
+                        :class="`table_header__item_up--${item.direction === 1 ? 'active' : ''}`"></span>
                     <span v-if="item.sort" class="table_header__item_down"
-                        :class="`table_header__item_down--${item.sortType === 2 ? 'active' : ''}`"></span>
+                        :class="`table_header__item_down--${item.direction === 2 ? 'active' : ''}`"></span>
                 </td>
             </tr>
         </table>
@@ -21,7 +21,7 @@
             </tr>
         </table>
     </div>
-    <div class="paging">
+    <div class="paging" v-if="pagination">
         共{{ totalNum }}条记录
         每页{{ perPage }} 条
         <span @click="_prevPage" class="paging__btn" :class="`paging__btn--${isFirst ? '' : 'active'}`">
@@ -43,17 +43,19 @@ import { sortByKey } from '../utils/common'
 const props = withDefaults(defineProps<{
     data: any[],
     columns: any[],
-    defaultHeight: number
+    defaultHeight: number,
+    pagination: boolean,
 }>(), {
     data: () => [],
     columns: () => [],
-    defaultHeight: 250
+    defaultHeight: 250,
+    pagination: true
 })
 
 const originData = [...props.data]
 let tempData = reactive(props.data)
 const columnList = reactive([...props.columns.map((v) => {
-    v.sortType = 0
+    v.direction = 0
     // 0: 原， 1: 升， 2: 降
     return v
 })])
@@ -67,16 +69,17 @@ const keyList = computed(() => {
 
 const isDefaultDirection = computed(() => {
     return !!columnList.reduce((pre, cur) => {
-        return pre * cur.sortType
+        return pre * cur.direction
     }, 1)
 })
 
 const curTableData = computed(() => {
     let dataList = isDefaultDirection.value ? originData : tempData;
-    let { data } = _filterByStep(dataList);
+    const { start, end } = step.value
+    let data = props.pagination ? _filterByStep(dataList, start, end) : dataList;
     columnList.forEach(item => {
-        if(item.sortType){
-            sortByKey(data, item.key, item.sortType)
+        if (item.direction) {
+            sortByKey(data, item.key, item.direction)
         }
     })
     return data
@@ -86,13 +89,14 @@ const _sortBy = (index: number, key: string, sortAble: boolean) => {
     if (!sortAble) {
         return
     }
-    let type = columnList[index].sortType;
+    let type = columnList[index].direction;
     type = type === 2 ? 0 : ++type
     columnList.forEach((ele, idx) => {
-        ele.sortType = idx === index ? type : 0
+        ele.direction = idx === index ? type : 0
     })
     if (type) {
-        const { data, start, end } = _filterByStep(tempData)
+        const { start, end } = step.value
+        let data = _filterByStep(tempData, start, end)
         tempData = tempData.slice(0, start).concat(sortByKey(data, key, type)).concat(tempData.slice(end, tempData.length))
     } else {
         tempData = [...originData]
@@ -104,6 +108,7 @@ const tableStyle = computed(() => {
         height: `${props.defaultHeight}px`
     }
 })
+
 const curIndex = ref(1)
 const perPage = ref(10)
 const isValid = ref(true)
@@ -130,6 +135,15 @@ const endPage = computed(() => {
     return Math.ceil(totalNum.value / perPage.value)
 })
 
+const step = computed(() => {
+    let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
+    let end = start + perPage.value
+    return {
+        start,
+        end
+    }
+})
+
 const _prevPage = () => {
     if (isFirst.value) {
         return
@@ -144,17 +158,11 @@ const _nextPage = () => {
     curIndex.value++
 }
 
-const _filterByStep = (data: any[]) => {
-    let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
-    let end = start + perPage.value
+const _filterByStep = (data: any[], start: number, end: number) => {
     let filterData = data.length ? data.filter((item, index) => {
         return (index >= start && index < end)
     }) : []
-    return {
-        data: filterData,
-        start,
-        end
-    }
+    return filterData
 }
 const _setValue = (e: any) => {
     let numReg = /^[0-9]*$/
