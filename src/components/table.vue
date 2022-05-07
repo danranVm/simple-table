@@ -2,7 +2,7 @@
     <div class="table" :style="tableStyle">
         <table class="table_header" border="1" cellspacing="0" cellpadding="0">
             <tr class="table_header__row">
-                <td v-for="(item, index) in columnList" :key="item.key" @click="_sortBy(index, item.key, item.sort)"
+                <td v-for="(item, index) in columnList" :key="item.key" @click="_sortBy(index, item.sort)"
                     class="table_header__item" :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
@@ -59,7 +59,6 @@ const {
     pagination
 } = props
 
-let tempData = reactive(data)
 const columnList = reactive(columns.map((v) => {
     v.direction = 0
     // 0: 原， 1: 升， 2: 降
@@ -84,22 +83,16 @@ const curTableData = computed(() => {
     return filterData
 })
 
-const _sortBy = (index: number, key: string, sortAble: boolean) => {
+const _sortBy = (index: number, sortAble: boolean) => {
+    // index换key
     if (!sortAble) {
         return
     }
-    let type = columnList[index].direction;
-    type = type === 2 ? 0 : ++type
+    let direction = columnList[index].direction;
+    direction = direction === 2 ? 0 : ++direction
     columnList.forEach((ele, idx) => {
-        ele.direction = idx === index ? type : 0
+        ele.direction = idx === index ? direction : 0
     })
-    if (type) {
-        const { start, end } = stepRange.value
-        let filterData = _filterByStep(data, start, end)
-        tempData = tempData.slice(0, start).concat(sortByKey(filterData, key, type)).concat(tempData.slice(end, tempData.length))
-    } else {
-        tempData = data
-    }
 }
 
 const tableStyle = computed(() => {

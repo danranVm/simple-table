@@ -28,13 +28,30 @@
             {{ content.i }}
         </template>
     </Table>
+    <button @click="changeData">点我</button>
 </template>
 
 <script setup lang="ts">
 import Table from '@components/table.vue'
+import { onMounted, reactive } from "vue";
 
-const data = Array.from(Array(47)).map(function (v, i) {
+let data = reactive(Array.from(Array(47)).map(function (v, i) {
     let t = i&1 ? 2 : 0
+    return {
+        a: 'a' + (i + t),
+        b: 'b' + (i + t),
+        c: (i + t),
+        d: 'd' + (i + t),
+        e: 'e' + (i + t + 9) ,
+        f: 'f' + (i + t),
+        g: 'g' + (i + t),
+        h: 'g' + (i + t),
+        i: 'g' + (i + t),
+    };
+}))
+
+let dd = Array.from(Array(66)).map(function (v, i) {
+    let t = i&1 ? 3 : 2
     return {
         a: 'a' + (i + t),
         b: 'b' + (i + t),
@@ -87,5 +104,9 @@ const columns = [
         sort: true
     }
 ]
+
+const changeData = () => {
+    data = reactive(dd)
+}
 
 </script>
