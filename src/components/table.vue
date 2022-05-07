@@ -73,16 +73,9 @@ const keyList = computed(() => {
     return filterKeys
 })
 
-const isDefaultDirection = computed(() => {
-    return !!columnList.reduce((pre, cur) => {
-        return pre * cur.direction
-    }, 1)
-})
-
 const curTableData = computed(() => {
-    let dataList = isDefaultDirection.value ? data : tempData;
-    const { start, end } = step.value
-    let filterData = pagination ? _filterByStep(dataList, start, end) : dataList;
+    const { start, end } = stepRange.value
+    let filterData = pagination ? _filterByStep(data, start, end) : data;
     columnList.forEach(item => {
         if (item.direction) {
             sortByKey(filterData, item.key, item.direction)
@@ -101,8 +94,8 @@ const _sortBy = (index: number, key: string, sortAble: boolean) => {
         ele.direction = idx === index ? type : 0
     })
     if (type) {
-        const { start, end } = step.value
-        let filterData = _filterByStep(tempData, start, end)
+        const { start, end } = stepRange.value
+        let filterData = _filterByStep(data, start, end)
         tempData = tempData.slice(0, start).concat(sortByKey(filterData, key, type)).concat(tempData.slice(end, tempData.length))
     } else {
         tempData = data
@@ -135,7 +128,7 @@ const endPage = computed(() => {
     return Math.ceil(totalNum.value / perPage.value)
 })
 
-const step = computed(() => {
+const stepRange = computed(() => {
     // 非法输入就重置回第一页
     let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
     let end = start + perPage.value
