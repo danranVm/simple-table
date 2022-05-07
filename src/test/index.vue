@@ -28,14 +28,14 @@
             {{ content.i }}
         </template>
     </Table>
-    <button @click="changeData">点我</button>
+    <button @click="changeData">点我加载新数据</button>
 </template>
 
 <script setup lang="ts">
 import Table from '@components/table.vue'
-import { onMounted, reactive } from "vue";
+import { ref } from "vue";
 
-let data = reactive(Array.from(Array(47)).map(function (v, i) {
+let data = ref(Array.from(Array(47)).map(function (v, i) {
     let t = i&1 ? 2 : 0
     return {
         a: 'a' + (i + t),
@@ -106,7 +106,7 @@ const columns = [
 ]
 
 const changeData = () => {
-    data = reactive(dd)
+    data.value = dd
 }
 
 </script>

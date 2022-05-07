@@ -2,7 +2,7 @@
     <div class="table" :style="tableStyle">
         <table class="table_header" border="1" cellspacing="0" cellpadding="0">
             <tr class="table_header__row">
-                <td v-for="(item, index) in columnList" :key="item.key" @click="_sortBy(index, item.sort)"
+                <td v-for="(item, index) in columnList" :key="item.key" @click="_sortBy(item.key, item.sort)"
                     class="table_header__item" :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
@@ -24,20 +24,22 @@
     <div class="pagination" v-if="pagination">
         共{{ totalNum }}条记录
         每页{{ perPage }} 条
-        <span @click="_prevPage" class="pagination__btn" :class="`pagination__btn--${isFirstOrDisabled ? '' : 'active'}`">
+        <span @click="_prevPage" class="pagination__btn"
+            :class="`pagination__btn--${isFirstOrDisabled ? '' : 'active'}`">
             上一页
         </span>
-        <span @click="_nextPage" class="pagination__btn" :class="`pagination__btn--${isLastOrDisabled ? '' : 'active'}`">
+        <span @click="_nextPage" class="pagination__btn"
+            :class="`pagination__btn--${isLastOrDisabled ? '' : 'active'}`">
             下一页
         </span>
         前往第
-        <input type="text" class="pagination__input" :class="`pagination__input--${isValid ? '' : 'error'}`" :value="curIndex"
-            @input="_setValue($event)" /> 页
+        <input type="text" class="pagination__input" :class="`pagination__input--${isValid ? '' : 'error'}`"
+            :value="curIndex" @input="_setValue($event)" /> 页
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { sortByKey } from '../utils/common'
 
 const props = withDefaults(defineProps<{
@@ -57,16 +59,16 @@ const {
     columns,
     defaultHeight,
     pagination
-} = props
+} = toRefs(props)
 
-const columnList = reactive(columns.map((v) => {
+const columnList = ref(columns.value.map((v) => {
     v.direction = 0
     // 0: 原， 1: 升， 2: 降
     return v
 }))
 
 const keyList = computed(() => {
-    const filterKeys = columns.map((v) => {
+    const filterKeys = columns.value.map((v) => {
         return v.key
     })
     return filterKeys
@@ -74,24 +76,25 @@ const keyList = computed(() => {
 
 const curTableData = computed(() => {
     const { start, end } = stepRange.value
-    let filterData = pagination ? _filterByStep(data, start, end) : data;
-    columnList.forEach(item => {
-        if (item.direction) {
+    let filterData = pagination ? _filterByStep(data.value, start, end) : data.value;
+    columnList.value.forEach(item => {
+        if (item.sort && item.direction) {
             sortByKey(filterData, item.key, item.direction)
         }
     })
     return filterData
 })
 
-const _sortBy = (index: number, sortAble: boolean) => {
-    // index换key
+const _sortBy = (key: string, sortAble: boolean) => {
     if (!sortAble) {
         return
     }
-    let direction = columnList[index].direction;
+    let direction = columnList.value.filter(item => {
+        return item.key === key
+    })[0].direction
     direction = direction === 2 ? 0 : ++direction
-    columnList.forEach((ele, idx) => {
-        ele.direction = idx === index ? direction : 0
+    columnList.value.forEach(ele => {
+        ele.direction = ele.key === key ? direction : 0
     })
 }
 
@@ -105,11 +108,11 @@ const curIndex = ref(1)
 const perPage = ref(10)
 const isValid = ref(true)
 const totalNum = computed(() => {
-    return data.length
+    return data.value.length
 })
 
 const isFirstOrDisabled = computed(() => {
-    // input输入的value是字符型
+    // input输入的value是字符型,所以用 ==
     return !isValid.value || curIndex.value == 1
 })
 
@@ -176,7 +179,7 @@ const _setValue = (e: any) => {
 </script>
 <style lang="less" scoped>
 .table {
-    min-height: 200px;
+    min-height: 235px;
 
     &_header {
         width: 100%;
