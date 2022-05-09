@@ -39,12 +39,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import { sortByKey } from '../utils/common'
+import { type colunmItemConfig } from "./types";
 
 const props = withDefaults(defineProps<{
     data: any[],
-    columns: any[],
+    columns: colunmItemConfig[],
     defaultHeight?: number,
     pagination?: boolean,
 }>(), {
@@ -61,7 +62,7 @@ const {
     pagination
 } = toRefs(props)
 
-const columnList = ref(columns.value.map((v) => {
+const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
     v.direction = 0
     // 0: 原， 1: 升， 2: 降
     return v
@@ -82,6 +83,7 @@ const curTableData = computed(() => {
             sortByKey(filterData, item.key, item.direction)
         }
     })
+    // 这里可以对filterData做其他筛选功能
     return filterData
 })
 
@@ -93,6 +95,8 @@ const _sortBy = (key: string, sortAble: boolean) => {
         return item.key === key
     })[0].direction
     direction = direction === 2 ? 0 : ++direction
+    
+    // 排序一列，把其他列的direction重置
     columnList.value.forEach(ele => {
         ele.direction = ele.key === key ? direction : 0
     })
@@ -176,6 +180,10 @@ const _setValue = (e: any) => {
     }
 }
 
+// 源数据变化，重置页码回第一页。
+watch(data, () => {
+    curIndex.value = 1
+})
 </script>
 <style lang="less" scoped>
 .table {
@@ -186,7 +194,7 @@ const _setValue = (e: any) => {
 
         &__row {
             font-weight: bold;
-            background: #d2e8f3;
+            background: #d9ecff;
             border-bottom: none;
         }
 
@@ -231,7 +239,7 @@ const _setValue = (e: any) => {
             }
 
             &:nth-of-type(2n) {
-                background-color: #e6f3f7;
+                background-color: #d9ecff;
             }
         }
 
