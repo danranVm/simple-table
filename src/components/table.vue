@@ -64,7 +64,6 @@ const {
 
 const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
     v.direction = 0
-    // 0: 原， 1: 升， 2: 降
     return v
 }))
 
