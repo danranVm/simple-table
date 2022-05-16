@@ -1,3 +1,15 @@
+import Table from "./table.vue";
+// import 
+
+export type MyTable = typeof Table
+
+export const tableProps = {
+    data: [],
+    columns: [],
+    defaultHeight: 235,
+    pagination: true,
+}
+
 export interface colunmItemConfig {
     title: string;
     key: string;

@@ -14,35 +14,23 @@
         </table>
         <table class="table_body" border="1" cellspacing="0" cellpadding="0">
             <tr v-for="(item, index) in curTableData" :key="index" class="table_body__row">
-                <td v-for="(ele, idx) in keyList" class="table_body__item" :title="item[ele]">
-                    <slot :content="item" :name="ele" :key="idx">
+                <td v-for="(ele, idx) in defaultSlots" class="table_body__item" :title="item[ele]">
+                    <slot :record="item" :name="ele" :key="idx">
                     </slot>
                 </td>
             </tr>
         </table>
     </div>
-    <div class="pagination" v-if="pagination">
-        共{{ totalNum }}条记录
-        每页{{ perPage }} 条
-        <span @click="_prevPage" class="pagination__btn"
-            :class="`pagination__btn--${isFirstOrDisabled ? '' : 'active'}`">
-            上一页
-        </span>
-        <span @click="_nextPage" class="pagination__btn"
-            :class="`pagination__btn--${isLastOrDisabled ? '' : 'active'}`">
-            下一页
-        </span>
-        前往第
-        <input type="text" class="pagination__input" :class="`pagination__input--${isValid ? '' : 'error'}`"
-            :value="curIndex" @input="_setValue($event)" /> 页
-    </div>
+    <Pagination v-if="pagination" :total="tableLength" @step-change="_stepChange" />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRefs, useSlots } from 'vue';
+import Pagination from '@components/pagination/index.vue';
+import type { StepItem } from './pagination/types'
 import { sortByKey } from '../utils/common'
-import { type colunmItemConfig } from "./types";
-
+import type { colunmItemConfig } from "./types";
+const slots = useSlots()
 const props = withDefaults(defineProps<{
     data: any[],
     columns: colunmItemConfig[],
@@ -67,11 +55,8 @@ const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
     return v
 }))
 
-const keyList = computed(() => {
-    const filterKeys = columns.value.map((v) => {
-        return v.key
-    })
-    return filterKeys
+const defaultSlots = computed(() => {
+    return Object.keys(slots) || []
 })
 
 const curTableData = computed(() => {
@@ -86,7 +71,17 @@ const curTableData = computed(() => {
     return filterData
 })
 
-const _sortBy = (key: string, sortAble: boolean) => {
+const tableLength = computed(() => {
+    return data.value.length
+})
+
+const stepRange = ref({ start: 0, end: 10 })
+
+const _stepChange = (step: StepItem) => {
+    stepRange.value = step
+}
+
+const _sortBy = (key: string, sortAble: boolean | undefined) => {
     if (!sortAble) {
         return
     }
@@ -94,7 +89,7 @@ const _sortBy = (key: string, sortAble: boolean) => {
         return item.key === key
     })[0].direction
     direction = direction === 2 ? 0 : ++direction
-    
+
     // 排序一列，把其他列的direction重置
     columnList.value.forEach(ele => {
         ele.direction = ele.key === key ? direction : 0
@@ -107,50 +102,6 @@ const tableStyle = computed(() => {
     }
 })
 
-const curIndex = ref(1)
-const perPage = ref(10)
-const isValid = ref(true)
-const totalNum = computed(() => {
-    return data.value.length
-})
-
-const isFirstOrDisabled = computed(() => {
-    // input输入的value是字符型,所以用 ==
-    return !isValid.value || curIndex.value == 1
-})
-
-const isLastOrDisabled = computed(() => {
-    return !isValid.value || curIndex.value == endPage.value
-})
-
-const endPage = computed(() => {
-    return Math.ceil(totalNum.value / perPage.value)
-})
-
-const stepRange = computed(() => {
-    // 非法输入就重置回第一页
-    let start = isValid.value ? (curIndex.value - 1) * perPage.value : 0;
-    let end = start + perPage.value
-    return {
-        start,
-        end
-    }
-})
-
-const _prevPage = () => {
-    if (isFirstOrDisabled.value) {
-        return
-    }
-    curIndex.value--
-}
-
-const _nextPage = () => {
-    if (isLastOrDisabled.value) {
-        return
-    }
-    curIndex.value++
-}
-
 const _filterByStep = (data: any[], start: number, end: number) => {
     let filterData = data.filter((item, index) => {
         return (index >= start && index < end)
@@ -158,31 +109,6 @@ const _filterByStep = (data: any[], start: number, end: number) => {
     return filterData
 }
 
-const _setValue = (e: any) => {
-    let numReg = /^[0-9]*$/
-    let inputNum = e.target.value
-    curIndex.value = inputNum
-    if (numReg.test(String(Math.abs(parseFloat(inputNum))))) {
-        if (inputNum < 1) {
-            e.target.title = '该输入项的最小值是1'
-            isValid.value = false
-        } else if (inputNum > endPage.value) {
-            e.target.title = `该输入项的最大值是${endPage.value}`
-            isValid.value = false
-        } else {
-            isValid.value = true
-            e.target.title = inputNum
-        }
-    } else {
-        isValid.value = false
-        e.target.title = '该输入项不是一个有效的数字'
-    }
-}
-
-// 源数据变化，重置页码回第一页。
-watch(data, () => {
-    curIndex.value = 1
-})
 </script>
 <style lang="less" scoped>
 .table {

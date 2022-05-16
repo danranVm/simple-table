@@ -1,31 +1,31 @@
 <template>
     <Table :data="data" :columns="columns">
-        <template #a="{ content }">
-            {{ content.a }}
+        <template #a="{ record }">
+            {{ record.a }}
         </template>
-        <template #b="{ content }">
-            {{ content.b }}
+        <template #b="{ record }">
+            {{ record.b }}
         </template>
-        <template #c="{ content }">
-            {{ content.c }}
+        <template #c="{ record }">
+            {{ record.c }}
         </template>
-        <template #d="{ content }">
-            {{ content.d }}
+        <template #d="{ record }">
+            {{ record.d }}
         </template>
-        <template #e="{ content }">
-            {{ content.e }}
+        <template #e="{ record }">
+            {{ record.e }}
         </template>
-        <template #f="{ content }">
-            {{ content.f }}
+        <template #f="{ record }">
+            {{ record.f }}
         </template>
-        <template #g="{ content }">
-            {{ content.g }}
+        <template #g="{ record }">
+            {{ record.g }}
         </template>
-        <template #h="{ content }">
-            {{ content.h }}
+        <template #h="{ record }">
+            {{ record.h }}
         </template>
-        <template #i="{ content }">
-            {{ content.i }}
+        <template #i="{ record }">
+            {{ record.i }}
         </template>
     </Table>
     <button @click="changeData">点我加载新数据</button>
@@ -35,7 +35,7 @@
 import Table from '@components/table.vue'
 import { ref } from "vue";
 
-let data = ref(Array.from(Array(47)).map(function (v, i) {
+let data = ref(Array.from(Array(4447)).map(function (v, i) {
     let t = i & 1 ? 2 : 0
     return {
         a: 'a' + (i + t),
