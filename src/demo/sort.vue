@@ -35,6 +35,12 @@
 import Table from '@components/table.vue'
 import { ref } from "vue";
 
+/**
+ * 
+ * file 开启排序。 在colums的元素中声明sort:true
+ * 
+*/
+
 let data = ref(Array.from(Array(4447)).map(function (v, i) {
     let t = i & 1 ? 2 : 0
     return {
@@ -54,7 +60,7 @@ const columns = [
     {
         title: '数据1',
         key: 'a',
-        // sort: true
+        sort: true
     }, {
         title: '数据2',
         key: 'b',

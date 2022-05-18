@@ -97,7 +97,6 @@ const _nextPage = () => {
     emits('stepChange', getData.value)
 }
 
-// $event的类型不会写
 const _setValue = (e: any) => {
     let numReg = /^[0-9]*$/
     let inputNum = e.target.value

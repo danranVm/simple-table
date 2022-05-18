@@ -1,8 +1,8 @@
 <template>
-    <div class="table" :style="tableStyle">
+    <div class="table">
         <table class="table_header" border="1" cellspacing="0" cellpadding="0">
             <tr class="table_header__row">
-                <td v-for="(item, index) in columnList" :key="item.key" @click="_sortBy(item.key, item.sort)"
+                <td v-for="item in columnList" :key="item.key" @click="_sortBy(item.key, item.sort)"
                     class="table_header__item" :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
@@ -12,14 +12,17 @@
                 </td>
             </tr>
         </table>
-        <table class="table_body" border="1" cellspacing="0" cellpadding="0">
-            <tr v-for="(item, index) in curTableData" :key="index" class="table_body__row">
-                <td v-for="(ele, idx) in defaultSlots" class="table_body__item" :title="item[ele]">
-                    <slot :record="item" :name="ele" :key="idx">
-                    </slot>
-                </td>
-            </tr>
-        </table>
+        <div :style="tableStyle" class="table_body__contaniner">
+            <table class="table_body" border="1" cellspacing="0" cellpadding="0">
+                <tr v-for="(item, index) in curTableData" :key="index" class="table_body__row">
+                    <td v-for="(ele, idx) in defaultSlots" class="table_body__item" :title="item[ele]">
+                        <slot :record="item" :name="ele" :key="idx">
+                        </slot>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
     </div>
     <Pagination v-if="pagination" :total="tableLength" @step-change="_stepChange" />
 </template>
@@ -39,7 +42,7 @@ const props = withDefaults(defineProps<{
 }>(), {
     data: () => [],
     columns: () => [],
-    defaultHeight: 235,
+    defaultHeight: 200,
     pagination: true
 })
 
@@ -61,13 +64,12 @@ const defaultSlots = computed(() => {
 
 const curTableData = computed(() => {
     const { start, end } = stepRange.value
-    let filterData = pagination ? _filterByStep(data.value, start, end) : data.value;
+    let filterData = pagination.value ? _filterByStep(data.value, start, end) : data.value;
     columnList.value.forEach(item => {
         if (item.sort && item.direction) {
             sortByKey(filterData, item.key, item.direction)
         }
     })
-    // 这里可以对filterData做其他筛选功能
     return filterData
 })
 
@@ -98,7 +100,7 @@ const _sortBy = (key: string, sortAble: boolean | undefined) => {
 
 const tableStyle = computed(() => {
     return {
-        height: `${defaultHeight}px`
+        height: `${defaultHeight.value}px`
     }
 })
 
@@ -112,7 +114,6 @@ const _filterByStep = (data: any[], start: number, end: number) => {
 </script>
 <style lang="less" scoped>
 .table {
-    min-height: 235px;
 
     &_header {
         width: 100%;
@@ -166,10 +167,19 @@ const _filterByStep = (data: any[], start: number, end: number) => {
             &:nth-of-type(2n) {
                 background-color: #d9ecff;
             }
+
+            &:last-of-type {
+                border-bottom: none;
+            }
         }
 
         &__item {
             min-width: 80px;
+        }
+
+        &__contaniner {
+            overflow-y: scroll;
+            border-bottom: 1px solid;
         }
     }
 
