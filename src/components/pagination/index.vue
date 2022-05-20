@@ -2,17 +2,16 @@
     <div class="pagination" v-if="enable">
         共{{ total }}条记录
         每页{{ pageSize }} 条
-        <span @click="_prevPage" class="pagination__btn"
+        <span @click="prevPage" class="pagination__btn"
             :class="`pagination__btn--${isFirstOrDisabled ? '' : 'active'}`">
             上一页
         </span>
-        <span @click="_nextPage" class="pagination__btn"
-            :class="`pagination__btn--${isLastOrDisabled ? '' : 'active'}`">
+        <span @click="nextPage" class="pagination__btn" :class="`pagination__btn--${isLastOrDisabled ? '' : 'active'}`">
             下一页
         </span>
         前往第
         <input type="text" class="pagination__input" :class="`pagination__input--${isValid ? '' : 'error'}`"
-            :value="curIndex" @input="_setValue($event)" /> 页
+            :value="curIndex" @input="setValue($event)" /> 页
     </div>
 </template>
     
@@ -54,7 +53,7 @@ export default defineComponent({
             }
         })
 
-        const _prevPage = () => {
+        const prevPage = () => {
             if (isFirstOrDisabled.value) {
                 return
             }
@@ -62,7 +61,7 @@ export default defineComponent({
             emit('stepChange', getData.value)
         }
 
-        const _nextPage = () => {
+        const nextPage = () => {
             if (isLastOrDisabled.value) {
                 return
             }
@@ -70,7 +69,7 @@ export default defineComponent({
             emit('stepChange', getData.value)
         }
 
-        const _setValue = (e: any) => {
+        const setValue = (e: any) => {
             let numReg = /^[0-9]*$/
             let inputNum = e.target.value
             curIndex.value = inputNum
@@ -91,13 +90,13 @@ export default defineComponent({
             }
         }
         return {
-            _prevPage,
-            _nextPage,
+            prevPage,
+            nextPage,
             isFirstOrDisabled,
             isLastOrDisabled,
             curIndex,
             isValid,
-            _setValue,
+            setValue,
             resetIndex
         }
     }

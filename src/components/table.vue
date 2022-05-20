@@ -2,7 +2,7 @@
     <div class="table">
         <table class="table_header" border="1" cellspacing="0" cellpadding="0">
             <tr class="table_header__row">
-                <td v-for="item in columnList" :key="item.key" @click="_onSort(item.key, item.sort)"
+                <td v-for="item in columnList" :key="item.key" @click="onSort(item.key, item.sort)"
                     class="table_header__item" :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
@@ -24,7 +24,7 @@
         </div>
 
     </div>
-    <Pagination v-if="pagination" :total="tableLength" @step-change="_stepChange" />
+    <Pagination v-if="pagination" :total="tableLength" @step-change="stepChange" />
 </template>
 
 <script lang="ts">
@@ -48,7 +48,7 @@ export default defineComponent({
         }));
         const curTableData = computed(() => {
             const { start, end } = stepRange.value
-            let filterData = pagination.value ? _filterByStep(data.value, start, end) : data.value;
+            let filterData = pagination.value ? filterByStep(data.value, start, end) : data.value;
             columnList.value.forEach(item => {
                 if (item.sort && item.direction) {
                     sortByKey(filterData, item.key, item.direction)
@@ -69,11 +69,11 @@ export default defineComponent({
 
         const stepRange = ref({ start: 0, end: 10 })
 
-        const _stepChange = (step: StepItem) => {
+        const stepChange = (step: StepItem) => {
             stepRange.value = step
         }
 
-        const _onSort = (key: string, sortAble: boolean | undefined) => {
+        const onSort = (key: string, sortAble: boolean | undefined) => {
             if (!sortAble) {
                 return
             }
@@ -94,18 +94,18 @@ export default defineComponent({
             }
         })
 
-        const _filterByStep = (data: any[], start: number, end: number) => {
+        const filterByStep = (data: any[], start: number, end: number) => {
             return data.filter((item, index) => (index >= start && index < end))
         }
 
         return {
             defaultSlots,
             columnList,
-            _onSort,
+            onSort,
             tableStyle,
             curTableData,
             tableLength,
-            _stepChange
+            stepChange
         }
     }
 })
@@ -182,30 +182,5 @@ export default defineComponent({
         }
     }
 
-}
-
-.pagination {
-    text-align: end;
-
-    &__input {
-        width: 20px;
-        text-align: center;
-        margin: 0 5px;
-
-        &--error:focus-visible {
-            outline: none;
-            border: 2px solid red;
-            color: red;
-        }
-    }
-
-    &__btn {
-        color: gray;
-
-        &--active {
-            cursor: pointer;
-            color: black;
-        }
-    }
 }
 </style>

@@ -1,7 +1,9 @@
 <template>
     <MyTable :data="data" :columns="columns">
         <template #a="{ record }">
-            {{ record.a }}
+            <div style="background-color: #4b4b4a;">
+                {{ record.a }}
+            </div>
         </template>
         <template #b="{ record }">
             {{ record.b }}

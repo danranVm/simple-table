@@ -1,6 +1,5 @@
 import Table from "./table.vue";
 import { PropType, ExtractPropTypes } from 'vue'
-// import 
 
 export type MyTable = typeof Table
 
