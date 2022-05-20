@@ -2,15 +2,15 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 // import SimpleTable from "./components/table/index";
-import Base from '@/demo/base.vue';
+// import Base from '@/demo/base.vue';
 // import NoPaging from '@/demo/noPaging.vue'
 // import SetHeight from "@/demo/setHeight.vue";
-// import Sort from "@/demo/sort.vue";
+import Sort from "@/demo/sort.vue";
 
 </script>
 
 <template>
-  <Base />
+  <Sort />
 </template>
 
 <style>

@@ -15,7 +15,7 @@
         <div :style="tableStyle" class="table_body__contaniner">
             <table class="table_body" border="1" cellspacing="0" cellpadding="0">
                 <tr v-for="(item, index) in curTableData" :key="index" class="table_body__row">
-                    <td v-for="(ele, idx) in defaultSlots" class="table_body__item" :title="item[ele]">
+                    <td v-for="(ele, idx) in Object.keys($slots)" class="table_body__item" :title="item[ele]">
                         <slot :record="item" :name="ele" :key="idx">
                         </slot>
                     </td>
@@ -30,8 +30,8 @@
 <script lang="ts">
 import { computed, ref, toRefs, defineComponent } from 'vue';
 import Pagination from '@components/pagination/index.vue';
-import type { StepItem } from './pagination/types'
-import { sortByKey } from '../utils/common'
+import type { StepItem } from '../pagination/types'
+import { sortByKey } from '../../utils/common'
 import { type colunmItemConfig, tableProps } from "./types";
 export default defineComponent({
     name: 'MyTable',
@@ -39,9 +39,8 @@ export default defineComponent({
     components: {
         Pagination
     },
-    setup(props, { slots }) {
+    setup(props) {
         const { data, columns, defaultHeight, pagination } = toRefs(props);
-        const defaultSlots = computed(() => Object.keys(slots) || []);
         const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
             v.direction = 0
             return v
@@ -60,12 +59,6 @@ export default defineComponent({
         const tableLength = computed(() => {
             return data.value.length
         })
-
-        //const { paginationRef, stateRef } = usePagination({
-        //     enable: pagination.value,
-        //     total: data.value.length,
-        //     pageSize: 10
-        // }) 
 
         const stepRange = ref({ start: 0, end: 10 })
 
@@ -99,7 +92,6 @@ export default defineComponent({
         }
 
         return {
-            defaultSlots,
             columnList,
             onSort,
             tableStyle,

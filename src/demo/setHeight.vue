@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import Table from '@components/table.vue'
+import Table from '@components/table/index.vue'
 import { ref } from "vue";
 
 /**

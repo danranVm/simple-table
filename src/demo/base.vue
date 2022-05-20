@@ -1,7 +1,7 @@
 <template>
     <MyTable :data="data" :columns="columns">
         <template #a="{ record }">
-            <div style="background-color: #4b4b4a;">
+            <div style="background-color: red;">
                 {{ record.a }}
             </div>
         </template>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import MyTable from '@components/table.vue'
+import MyTable from '@components/table/index.vue'
 import { ref } from "vue";
 
 /**
