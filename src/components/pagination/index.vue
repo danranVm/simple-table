@@ -1,5 +1,5 @@
 <template>
-   <div class="pagination" v-if="enable">
+    <div class="pagination" v-if="enable">
         共{{ total }}条记录
         每页{{ pageSize }} 条
         <span @click="_prevPage" class="pagination__btn"
@@ -16,110 +16,91 @@
     </div>
 </template>
     
-<script setup lang='ts'>
-import { ref, toRefs, computed, defineExpose, defineEmits } from 'vue';
-import { StepItem } from './types'
-// import { usePagination } from "./usePagination";
+<script lang='ts'>
+import { ref, toRefs, computed, defineComponent } from 'vue';
+import { type StepItem, pageProps } from './types'
 
-const props = withDefaults(defineProps<{
-    enable: boolean,
-    total: number,
-    pageSize: number
-}>(), {
-    enable: true,
-    total: 0,
-    pageSize: 10
-})
-
-const emits = defineEmits(['stepChange']);
-
-// const {
-//     curIndex,
-//     isValid,
-//     resetIndex,
-//     isFirstOrDisabled,
-//     isLastOrDisabled,
-//     endPage,
-//     stepRange,
-//     _prevPage,
-//     _nextPage,
-//     _setValue
-// } = usePagination(props)
-
-
-const {
-    total,
-    pageSize
-} = toRefs(props)
-
-const curIndex = ref(1)
-const isValid = ref(true)
-const resetIndex = () => {
-    curIndex.value = 1
-}
-
-const isFirstOrDisabled = computed(() => {
-    // input输入的value是字符型,所以用 ==
-    return !isValid.value || curIndex.value == 1
-})
-
-const isLastOrDisabled = computed(() => {
-    return !isValid.value || curIndex.value == endPage.value
-})
-
-const endPage = computed(() => {
-    return Math.ceil(total.value / pageSize.value)
-})
-
-const getData = computed<StepItem>(() => {
-    // 非法输入就重置回第一页
-    let start = isValid.value ? (curIndex.value - 1) * pageSize.value : 0;
-    let end = start + pageSize.value
-    return {
-        start,
-        end
-    }
-})
-
-const _prevPage = () => {
-    if (isFirstOrDisabled.value) {
-        return
-    }
-    curIndex.value--;
-    emits('stepChange', getData.value)
-}
-
-const _nextPage = () => {
-    if (isLastOrDisabled.value) {
-        return
-    }
-    curIndex.value++;
-    emits('stepChange', getData.value)
-}
-
-const _setValue = (e: any) => {
-    let numReg = /^[0-9]*$/
-    let inputNum = e.target.value
-    curIndex.value = inputNum
-    if (numReg.test(String(Math.abs(parseFloat(inputNum))))) {
-        if (inputNum < 1) {
-            e.target.title = '该输入项的最小值是1'
-            isValid.value = false
-        } else if (inputNum > endPage.value) {
-            e.target.title = `该输入项的最大值是${endPage.value}`
-            isValid.value = false
-        } else {
-            isValid.value = true
-            e.target.title = inputNum
+export default defineComponent({
+    name: 'Pagination',
+    props: pageProps,
+    setup(props, { emit }) {
+        const { total, pageSize } = toRefs(props)
+        const curIndex = ref(1)
+        const isValid = ref(true)
+        const resetIndex = () => {
+            curIndex.value = 1
         }
-    } else {
-        isValid.value = false
-        e.target.title = '该输入项不是一个有效的数字'
-    }
-}
 
-defineExpose({
-    resetIndex
+        const isFirstOrDisabled = computed(() => {
+            // input输入的value是字符型,所以用 ==
+            return !isValid.value || curIndex.value == 1
+        })
+
+        const isLastOrDisabled = computed(() => {
+            return !isValid.value || curIndex.value == endPage.value
+        })
+
+        const endPage = computed(() => {
+            return Math.ceil(total.value / pageSize.value)
+        })
+
+        const getData = computed<StepItem>(() => {
+            // 非法输入就重置回第一页
+            let start = isValid.value ? (curIndex.value - 1) * pageSize.value : 0;
+            let end = start + pageSize.value
+            return {
+                start,
+                end
+            }
+        })
+
+        const _prevPage = () => {
+            if (isFirstOrDisabled.value) {
+                return
+            }
+            curIndex.value--;
+            emit('stepChange', getData.value)
+        }
+
+        const _nextPage = () => {
+            if (isLastOrDisabled.value) {
+                return
+            }
+            curIndex.value++;
+            emit('stepChange', getData.value)
+        }
+
+        const _setValue = (e: any) => {
+            let numReg = /^[0-9]*$/
+            let inputNum = e.target.value
+            curIndex.value = inputNum
+            if (numReg.test(String(Math.abs(parseFloat(inputNum))))) {
+                if (inputNum < 1) {
+                    e.target.title = '该输入项的最小值是1'
+                    isValid.value = false
+                } else if (inputNum > endPage.value) {
+                    e.target.title = `该输入项的最大值是${endPage.value}`
+                    isValid.value = false
+                } else {
+                    isValid.value = true
+                    e.target.title = inputNum
+                }
+            } else {
+                isValid.value = false
+                e.target.title = '该输入项不是一个有效的数字'
+            }
+        }
+        return {
+            _prevPage,
+            _nextPage,
+            isFirstOrDisabled,
+            isLastOrDisabled,
+            curIndex,
+            isValid,
+            _setValue,
+            resetIndex
+        }
+    }
 })
 
 </script>
@@ -148,5 +129,5 @@ defineExpose({
             color: black;
         }
     }
-}  
+}
 </style>

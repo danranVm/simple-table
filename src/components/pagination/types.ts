@@ -1,4 +1,4 @@
-import { ExtractPropTypes } from "vue"
+import { PropType, ExtractPropTypes } from "vue"
 
 export interface StepItem {
     start: number,
@@ -7,15 +7,15 @@ export interface StepItem {
 
 export const pageProps = {
     enable: {
-        type: Boolean,
+        type: Boolean as PropType<boolean>,
         default: true
     },
     total: {
-        type: Number,
+        type: Number as PropType<number>,
         default: 0
     },
     pageSize: {
-        type: Number,
+        type: Number as PropType<number>,
         default: 10
     }
 }

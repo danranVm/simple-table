@@ -2,7 +2,7 @@
     <div class="table">
         <table class="table_header" border="1" cellspacing="0" cellpadding="0">
             <tr class="table_header__row">
-                <td v-for="item in columnList" :key="item.key" @click="_sortBy(item.key, item.sort)"
+                <td v-for="item in columnList" :key="item.key" @click="_onSort(item.key, item.sort)"
                     class="table_header__item" :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
@@ -22,94 +22,93 @@
                 </tr>
             </table>
         </div>
-        
+
     </div>
     <Pagination v-if="pagination" :total="tableLength" @step-change="_stepChange" />
 </template>
 
-<script setup lang="ts">
-import { computed, ref, toRefs, useSlots } from 'vue';
+<script lang="ts">
+import { computed, ref, toRefs, defineComponent } from 'vue';
 import Pagination from '@components/pagination/index.vue';
 import type { StepItem } from './pagination/types'
 import { sortByKey } from '../utils/common'
-import type { colunmItemConfig } from "./types";
-const slots = useSlots()
-const props = withDefaults(defineProps<{
-    data: any[],
-    columns: colunmItemConfig[],
-    defaultHeight?: number,
-    pagination?: boolean,
-}>(), {
-    data: () => [],
-    columns: () => [],
-    defaultHeight: 200,
-    pagination: true
-})
+import { type colunmItemConfig, tableProps } from "./types";
+export default defineComponent({
+    name: 'MyTable',
+    props: tableProps,
+    components: {
+        Pagination
+    },
+    setup(props, { slots }) {
+        const { data, columns, defaultHeight, pagination } = toRefs(props);
+        const defaultSlots = computed(() => Object.keys(slots) || []);
+        const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
+            v.direction = 0
+            return v
+        }));
+        const curTableData = computed(() => {
+            const { start, end } = stepRange.value
+            let filterData = pagination.value ? _filterByStep(data.value, start, end) : data.value;
+            columnList.value.forEach(item => {
+                if (item.sort && item.direction) {
+                    sortByKey(filterData, item.key, item.direction)
+                }
+            })
+            return filterData
+        })
 
-const {
-    data,
-    columns,
-    defaultHeight,
-    pagination
-} = toRefs(props)
+        const tableLength = computed(() => {
+            return data.value.length
+        })
 
-const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
-    v.direction = 0
-    return v
-}))
+        //const { paginationRef, stateRef } = usePagination({
+        //     enable: pagination.value,
+        //     total: data.value.length,
+        //     pageSize: 10
+        // }) 
 
-const defaultSlots = computed(() => {
-    return Object.keys(slots) || []
-})
+        const stepRange = ref({ start: 0, end: 10 })
 
-const curTableData = computed(() => {
-    const { start, end } = stepRange.value
-    let filterData = pagination.value ? _filterByStep(data.value, start, end) : data.value;
-    columnList.value.forEach(item => {
-        if (item.sort && item.direction) {
-            sortByKey(filterData, item.key, item.direction)
+        const _stepChange = (step: StepItem) => {
+            stepRange.value = step
         }
-    })
-    return filterData
-})
 
-const tableLength = computed(() => {
-    return data.value.length
-})
+        const _onSort = (key: string, sortAble: boolean | undefined) => {
+            if (!sortAble) {
+                return
+            }
+            let direction = columnList.value.filter(item => {
+                return item.key === key
+            })[0].direction
+            direction = direction === 2 ? 0 : ++direction
 
-const stepRange = ref({ start: 0, end: 10 })
+            // 排序一列，把其他列的direction重置
+            columnList.value.forEach(ele => {
+                ele.direction = ele.key === key ? direction : 0
+            })
+        }
 
-const _stepChange = (step: StepItem) => {
-    stepRange.value = step
-}
+        const tableStyle = computed(() => {
+            return {
+                height: `${defaultHeight.value}px`
+            }
+        })
 
-const _sortBy = (key: string, sortAble: boolean | undefined) => {
-    if (!sortAble) {
-        return
+        const _filterByStep = (data: any[], start: number, end: number) => {
+            return data.filter((item, index) => (index >= start && index < end))
+        }
+
+        return {
+            defaultSlots,
+            columnList,
+            _onSort,
+            tableStyle,
+            curTableData,
+            tableLength,
+            _stepChange
+        }
     }
-    let direction = columnList.value.filter(item => {
-        return item.key === key
-    })[0].direction
-    direction = direction === 2 ? 0 : ++direction
-
-    // 排序一列，把其他列的direction重置
-    columnList.value.forEach(ele => {
-        ele.direction = ele.key === key ? direction : 0
-    })
-}
-
-const tableStyle = computed(() => {
-    return {
-        height: `${defaultHeight.value}px`
-    }
 })
-
-const _filterByStep = (data: any[], start: number, end: number) => {
-    let filterData = data.filter((item, index) => {
-        return (index >= start && index < end)
-    })
-    return filterData
-}
 
 </script>
 <style lang="less" scoped>

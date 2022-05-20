@@ -1,5 +1,5 @@
 <template>
-    <Table :data="data" :columns="columns">
+    <MyTable :data="data" :columns="columns">
         <template #a="{ record }">
             {{ record.a }}
         </template>
@@ -27,12 +27,12 @@
         <template #i="{ record }">
             {{ record.i }}
         </template>
-    </Table>
+    </MyTable>
     <button @click="changeData">点我加载新数据</button>
 </template>
 
 <script setup lang="ts">
-import Table from '@components/table.vue'
+import MyTable from '@components/table.vue'
 import { ref } from "vue";
 
 /**
