@@ -16,58 +16,22 @@
 </template>
     
 <script lang='ts'>
-import { ref, toRefs, computed, defineComponent } from 'vue';
-import { type StepItem, pageProps } from './types'
+import { ref, computed, defineComponent } from 'vue';
+import { pageProps } from './types';
+import { usePagination } from './usePagination'
 
 export default defineComponent({
     name: 'Pagination',
     props: pageProps,
-    setup(props, { emit }) {
-        const { total, pageSize } = toRefs(props)
-        const curIndex = ref(1)
+    setup(props) {
+        const { curIndex, stepRange, total, pageSize, enable } = usePagination(props)
+
         const isValid = ref(true)
-        const resetIndex = () => {
-            curIndex.value = 1
-        }
-
-        const isFirstOrDisabled = computed(() => {
-            // input输入的value是字符型,所以用 ==
-            return !isValid.value || curIndex.value == 1
-        })
-
-        const isLastOrDisabled = computed(() => {
-            return !isValid.value || curIndex.value == endPage.value
-        })
-
-        const endPage = computed(() => {
-            return Math.ceil(total.value / pageSize.value)
-        })
-
-        const getData = computed<StepItem>(() => {
-            // 非法输入就重置回第一页
-            let start = isValid.value ? (curIndex.value - 1) * pageSize.value : 0;
-            let end = start + pageSize.value
-            return {
-                start,
-                end
-            }
-        })
-
-        const prevPage = () => {
-            if (isFirstOrDisabled.value) {
-                return
-            }
-            curIndex.value--;
-            emit('stepChange', getData.value)
-        }
-
-        const nextPage = () => {
-            if (isLastOrDisabled.value) {
-                return
-            }
-            curIndex.value++;
-            emit('stepChange', getData.value)
-        }
+        const isFirstOrDisabled = computed(() => !isValid.value || curIndex.value == 1)
+        const isLastOrDisabled = computed(() => !isValid.value || curIndex.value == endPage.value)
+        const endPage = computed(() => Math.ceil(total.value / pageSize.value))
+        const prevPage = () => !isFirstOrDisabled.value && curIndex.value-- 
+        const nextPage = () => !isLastOrDisabled.value && curIndex.value++ 
 
         const setValue = (e: any) => {
             let numReg = /^[0-9]*$/
@@ -89,6 +53,7 @@ export default defineComponent({
                 e.target.title = '该输入项不是一个有效的数字'
             }
         }
+
         return {
             prevPage,
             nextPage,
@@ -97,7 +62,8 @@ export default defineComponent({
             curIndex,
             isValid,
             setValue,
-            resetIndex
+            stepRange,
+            enable
         }
     }
 })

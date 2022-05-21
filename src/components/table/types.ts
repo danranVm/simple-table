@@ -1,7 +1,13 @@
 import Table from "./table.vue";
 import { PropType, ExtractPropTypes } from 'vue'
 
-export type MyTable = typeof Table
+export type MyTable = typeof Table;
+
+export enum DIRECTION {
+    desc = 'DESC',
+    asc = 'ASC',
+    none = ''
+}
 
 export const tableProps = {
     data: {
@@ -17,7 +23,7 @@ export const tableProps = {
         require: false,
         default: 200
     },
-    pagination: {
+    pageAble: {
         type: Boolean as PropType<boolean>,
         require: false,
         default: true
@@ -30,7 +36,7 @@ export interface colunmItemConfig {
     // 是否开启排序
     sort?: boolean;
     // 排序类型 0: 原， 1: 升， 2: 降
-    direction: number;
+    direction: DIRECTION;
 }
 
-export type tableProps = ExtractPropTypes<typeof tableProps>
+export type TableProps = ExtractPropTypes<typeof tableProps>

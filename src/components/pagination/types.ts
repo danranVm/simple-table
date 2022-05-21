@@ -1,5 +1,7 @@
-import { PropType, ExtractPropTypes } from "vue"
+import { PropType, ExtractPropTypes } from "vue";
+import Pagination from './index.vue';
 
+export type PagiNation = typeof Pagination;
 export interface StepItem {
     start: number,
     end: number
@@ -20,4 +22,4 @@ export const pageProps = {
     }
 }
 
-export type pageProps = ExtractPropTypes<typeof pageProps>
+export type PageProps = ExtractPropTypes<typeof pageProps>;
