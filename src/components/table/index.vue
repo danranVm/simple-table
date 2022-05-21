@@ -21,6 +21,9 @@
                     </td>
                 </tr>
             </table>
+            <div v-if="!finalData.length">
+                <h2>数据为空</h2>
+            </div>
         </div>
 
     </div>
@@ -28,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, defineComponent } from 'vue';
+import { computed, ref, defineComponent, watch } from 'vue';
 import Pagination from '@components/pagination/index.vue';
 import { type PagiNation } from '../pagination/types';
 import { sortByKey } from '../../utils/common'
@@ -43,7 +46,7 @@ export default defineComponent({
     setup(props) {
 
         const { data, columnList, defaultHeight, pageAble, onSort } = useTable(props)
-        
+
         const pagination = ref<PagiNation | null>(null)
 
         const stepRange = computed(() => pagination.value?.stepRange ?? { start: 0, end: 10 });
@@ -65,7 +68,12 @@ export default defineComponent({
             return pageAble.value ? sortedData.value : data.value
         })
 
-        const tableStyle = computed(() => ({ height: `${defaultHeight.value}px`}))
+        const tableStyle = computed(() => ({ height: `${defaultHeight.value}px` }));
+
+        // 原始数据变化，重置回第一页
+        watch(data, () => {
+            pagination.value?.resetIndex()
+        })
 
         return {
             columnList,
@@ -147,7 +155,7 @@ export default defineComponent({
 
         &__contaniner {
             overflow-y: scroll;
-            border-bottom: 1px solid;
+            border: 1px solid;
         }
     }
 

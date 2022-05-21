@@ -7,7 +7,9 @@ export interface PagingContext {
     total: Ref<number>;
     enable: Ref<boolean>;
     pageSize: Ref<number>;
-    stepRange: ComputedRef<StepItem>
+    stepRange: ComputedRef<StepItem>,
+    isValid: Ref<boolean>,
+    resetIsValid: (value: boolean) => void;
 }
 
 export function usePagination(
@@ -15,6 +17,7 @@ export function usePagination(
 ): PagingContext {
     const { pageSize, total, enable } = toRefs(props);
     const curIndex = ref(1)
+    const isValid = ref(true)
     const resetIndex = () => curIndex.value = 1;
 
     const stepRange = computed(() => {
@@ -25,12 +28,18 @@ export function usePagination(
         }
     });
 
+    const resetIsValid = (value: boolean) => {
+        isValid.value = value
+    }
+
     return {
         curIndex,
         total,
         enable,
         resetIndex,
         pageSize,
-        stepRange
+        stepRange,
+        isValid,
+        resetIsValid
     }
 }
