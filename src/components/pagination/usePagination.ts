@@ -9,7 +9,7 @@ export interface PagingContext {
     pageSize: Ref<number>;
     stepRange: ComputedRef<StepItem>,
     isValid: Ref<boolean>,
-    resetIsValid: (value: boolean) => void;
+    judgeInputValid: (input: string, end: number) => string;
 }
 
 export function usePagination(
@@ -30,6 +30,27 @@ export function usePagination(
 
     const resetIsValid = (value: boolean) => {
         isValid.value = value
+    };
+
+    const judgeInputValid = (input: string, end: number) => {
+        let reg = /^[1-9]\d*$/;
+        let num = Number(input)
+        if (reg.test(input)) {
+            if (num < 1) {
+                resetIsValid(false)
+                return '该输入项的最小值是1'
+            } else if (num > end) {
+                resetIsValid(false)
+                return `该输入项的最大值是${end}`
+            } else {
+                resetIsValid(true)
+                return input
+            }
+        } else {
+            resetIsValid(false)
+            return '该输入项不是一个有效的数字'
+        }
+
     }
 
     return {
@@ -40,6 +61,6 @@ export function usePagination(
         pageSize,
         stepRange,
         isValid,
-        resetIsValid
+        judgeInputValid
     }
 }

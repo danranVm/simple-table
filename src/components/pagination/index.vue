@@ -32,7 +32,7 @@ export default defineComponent({
             enable,
             resetIndex,
             isValid,
-            resetIsValid
+            judgeInputValid
         } = usePagination(props)
 
         const isFirstOrInvalid = computed(() => !isValid.value || curIndex.value == 1)
@@ -44,27 +44,6 @@ export default defineComponent({
         const setValue = (e: any) => {
             curIndex.value = e.target.value;
             e.target.title = judgeInputValid(e.target.value, endPage.value)
-        }
-
-        const judgeInputValid = (input: string, end: number) => {
-            let reg = /^[1-9]\d*$/;
-            let num = Number(input)
-            if (reg.test(input)) {
-                if (num < 1) {
-                    resetIsValid(false)
-                    return '该输入项的最小值是1'
-                } else if (num > end) {
-                    resetIsValid(false)
-                    return `该输入项的最大值是${end}`
-                } else {
-                    resetIsValid(true)
-                    return input
-                }
-            } else {
-                resetIsValid(false)
-                return '该输入项不是一个有效的数字'
-            }
-
         }
 
         return {

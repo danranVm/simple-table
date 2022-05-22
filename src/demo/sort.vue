@@ -99,7 +99,7 @@ const columns = [
 const changeData = () => {
     let num = Math.floor(Math.random() * 100)
     setTimeout(() => {
-        data.value = Array.from(Array(0)).map(function (v, i) {
+        data.value = Array.from(Array(num)).map(function (v, i) {
             let t = i & 1 ? Math.ceil(num / 10) + 1 : Math.ceil(num / 10) - 1
             return {
                 a: 'a' + (i + t),
