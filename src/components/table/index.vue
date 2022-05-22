@@ -34,7 +34,6 @@
 import { computed, ref, defineComponent, watch } from 'vue';
 import Pagination from '@components/pagination/index.vue';
 import { type PagiNation } from '../pagination/types';
-import { sortByKey } from '../../utils/common'
 import { tableProps, DIRECTION } from "./types";
 import { useTable } from './useTable';
 export default defineComponent({
@@ -45,7 +44,7 @@ export default defineComponent({
     },
     setup(props) {
 
-        const { data, columnList, defaultHeight, pageAble, onSort } = useTable(props)
+        const { data, columnList, defaultHeight, pageAble, onSort, sortByKey } = useTable(props)
 
         const pagination = ref<PagiNation | null>(null)
 
