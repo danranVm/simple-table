@@ -35,12 +35,17 @@ export default defineComponent({
             judgeInputValid
         } = usePagination(props)
 
+        // 首页或非法输入
         const isFirstOrInvalid = computed(() => !isValid.value || curIndex.value == 1)
+        // 尾页或非法输入
         const isLastOrInvalid = computed(() => !isValid.value || curIndex.value == endPage.value)
+        // 尾页
         const endPage = computed(() => Math.ceil(total.value / pageSize.value))
+        // 上一页
         const prevPage = () => !isFirstOrInvalid.value && curIndex.value--
+        // 下一页
         const nextPage = () => !isLastOrInvalid.value && curIndex.value++
-
+        // 设置输入框的值
         const setValue = (e: any) => {
             curIndex.value = e.target.value;
             e.target.title = judgeInputValid(e.target.value, endPage.value)

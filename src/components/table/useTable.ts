@@ -19,7 +19,8 @@ export function useTable(
         v.direction = DIRECTION.none
         return v
     }));
-
+    
+    // 点击切换排序规则
     const onSort = (key: string, sortAble: boolean | undefined, direction: DIRECTION) => {
         if (!sortAble) {
             return
@@ -28,6 +29,7 @@ export function useTable(
         columnList.value.forEach(ele => { ele.direction = ele.key === key ? direction : DIRECTION.none })
     }
 
+    // 根据columns里的key，对表格数据进行排序
     const sortByKey = (data: any[], key: string, type: DIRECTION) => {
         if (type === DIRECTION.none) {
             return data;
