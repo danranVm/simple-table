@@ -4,22 +4,19 @@ import type { PageProps, StepItem, PageConfig } from "./types";
 export interface PagingContext {
     resetIndex: () => void;
     stepRange: ComputedRef<StepItem>,
-    isFirstOrInvalid: ComputedRef<boolean>,
-    isLastOrInvalid: ComputedRef<boolean>,
-    endPage: ComputedRef<number>,
-    prevPage: () => void;
-    nextPage: () => void;
-    setValue: (e: any) => void;
+    setValue: (e: any, start: number, end: number) => void;
 }
 
 export function usePagination(
     props: PageProps,
     config: PageConfig
 ): PagingContext {
-    const { pageSize, total } = toRefs(props);
+    const { pageSize } = toRefs(props);
     const { curIndex, isValid } = toRefs(config);
+    // 重置页码
     const resetIndex = () => curIndex.value = 1;
 
+    // 返回当前start,end
     const stepRange = computed(() => {
         let start = (curIndex.value - 1) * pageSize.value
         return {
@@ -28,13 +25,13 @@ export function usePagination(
         }
     });
 
-    const judgeInputValid = (input: string, end: number, valid: Ref<boolean>) => {
+    const judgeInputValid = (input: string, start: number, end: number, valid: Ref<boolean>) => {
         let reg = /^[1-9]\d*$/;
         let num = Number(input)
         if (reg.test(input)) {
-            if (num < 1) {
+            if (num < start) {
                 valid.value = false
-                return '该输入项的最小值是1'
+                return `该输入项的最小值是${start}`
             } else if (num > end) {
                 valid.value = false
                 return `该输入项的最大值是${end}`
@@ -49,30 +46,15 @@ export function usePagination(
 
     }
 
-    // 首页或非法输入
-    const isFirstOrInvalid = computed(() => !isValid.value || curIndex.value == 1)
-    // 尾页或非法输入
-    const isLastOrInvalid = computed(() => !isValid.value || curIndex.value == endPage.value)
-    // 尾页
-    const endPage = computed(() => Math.ceil(total.value / pageSize.value))
-    // 上一页
-    const prevPage = () => !isFirstOrInvalid.value && curIndex.value--
-    // 下一页
-    const nextPage = () => !isLastOrInvalid.value && curIndex.value++
-    // 设置输入框的值
-    const setValue = (e: any) => {
+    // 输入框input事件
+    const setValue = (e: any, start: number, end: number) => {
         curIndex.value = e.target.value;
-        e.target.title = judgeInputValid(e.target.value, endPage.value, isValid)
+        e.target.title = judgeInputValid(e.target.value,start, end, isValid)
     }
 
     return {
         resetIndex,
         stepRange,
-        isFirstOrInvalid,
-        isLastOrInvalid,
-        endPage,
-        prevPage,
-        nextPage,
         setValue
     }
 }

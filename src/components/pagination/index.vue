@@ -12,7 +12,7 @@
         </span>
         前往第
         <input type="text" class="pagination__input" :class="`pagination__input--${isValid ? '' : 'error'}`"
-            :value="curIndex" @input="setValue($event)" /> 页
+            :value="curIndex" @input="setValue($event, 1, endPage)" /> 页
     </div>
 </template>
     
@@ -33,13 +33,19 @@ export default defineComponent({
         const {
             stepRange,
             resetIndex,
-            isFirstOrInvalid,
-            isLastOrInvalid,
-            endPage,
-            prevPage,
-            nextPage,
             setValue
-        } = usePagination(props, { curIndex, isValid })
+        } = usePagination(props, { curIndex, isValid });
+
+        // 首页或非法输入
+        const isFirstOrInvalid = computed(() => !isValid.value || curIndex.value == 1)
+        // 尾页或非法输入
+        const isLastOrInvalid = computed(() => !isValid.value || curIndex.value == endPage.value)
+        // 尾页
+        const endPage = computed(() => Math.ceil(total.value / pageSize.value))
+        // 上一页
+        const prevPage = () => !isFirstOrInvalid.value && curIndex.value--
+        // 下一页
+        const nextPage = () => !isLastOrInvalid.value && curIndex.value++
 
         return {
             prevPage,
