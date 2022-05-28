@@ -2,8 +2,9 @@
     <div class="table">
         <table class="table_header" border="1" cellspacing="0" cellpadding="0">
             <tr class="table_header__row">
-                <td v-for="item in columnList" :key="item.key" @click="onSort(item.key, item.sort, item.direction)"
-                    class="table_header__item" :title="item.title">
+                <td v-for="item in columnList" :key="item.key"
+                    @click="onSort(columnList, item.key, item.sort, item.direction)" class="table_header__item"
+                    :title="item.title">
                     {{ item.title }}
                     <span v-if="item.sort" class="table_header__item_up"
                         :class="`table_header__item_up--${item.direction === DIRECTION.asc ? 'active' : ''}`"></span>
@@ -31,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, defineComponent, watch } from 'vue';
+import { computed, ref, defineComponent, watch, toRefs } from 'vue';
 import Pagination from '@components/pagination/index.vue';
 import { type PagiNation } from '../pagination/types';
 import { tableProps, DIRECTION } from "./types";
@@ -43,8 +44,13 @@ export default defineComponent({
         Pagination
     },
     setup(props) {
+        const { data, columns, defaultHeight, pageAble } = toRefs(props);
+        const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
+            v.direction = DIRECTION.none;
+            return v;
+        }));
 
-        const { data, columnList, defaultHeight, pageAble, onSort, sortByKey } = useTable(props)
+        const { onSort, sortByKey } = useTable()
 
         const pagination = ref<PagiNation | null>(null)
 
