@@ -19,15 +19,3 @@ describe("mount table", () => {
         expect(wrapper.props().total).toBe(5)
     })
 });
-
-describe("test hooks", () => {
-    const context = usePagination({
-        total: 5,
-        pageSize: 10,
-        enable: false
-    })
-
-    test('test', () => {
-        expect(context.enable.value).toBe(false)
-    })
-})

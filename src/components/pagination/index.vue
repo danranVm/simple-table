@@ -1,8 +1,9 @@
 <template>
     <div class="pagination" v-if="enable">
         共{{ total }}条记录
-        每页{{ pageSize }} 条
-        共{{ endPage }} 页
+        每页{{ pageSize }}条
+        共{{ endPage }}页
+        当前第{{ curIndex }}页
         <span @click="prevPage" class="pagination__btn" :class="`pagination__btn--${isFirstOrInvalid ? '' : 'active'}`">
             上一页
         </span>
@@ -16,7 +17,7 @@
 </template>
     
 <script lang='ts'>
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref, toRefs } from 'vue';
 import { pageProps } from './types';
 import { usePagination } from './usePagination'
 
@@ -24,32 +25,21 @@ export default defineComponent({
     name: 'Pagination',
     props: pageProps,
     setup(props) {
-        const {
-            curIndex,
-            stepRange,
-            total,
-            pageSize,
-            enable,
-            resetIndex,
-            isValid,
-            judgeInputValid
-        } = usePagination(props)
 
-        // 首页或非法输入
-        const isFirstOrInvalid = computed(() => !isValid.value || curIndex.value == 1)
-        // 尾页或非法输入
-        const isLastOrInvalid = computed(() => !isValid.value || curIndex.value == endPage.value)
-        // 尾页
-        const endPage = computed(() => Math.ceil(total.value / pageSize.value))
-        // 上一页
-        const prevPage = () => !isFirstOrInvalid.value && curIndex.value--
-        // 下一页
-        const nextPage = () => !isLastOrInvalid.value && curIndex.value++
-        // 设置输入框的值
-        const setValue = (e: any) => {
-            curIndex.value = e.target.value;
-            e.target.title = judgeInputValid(e.target.value, endPage.value)
-        }
+        const curIndex = ref(1)
+        const isValid = ref(true);
+        const { pageSize, total, enable } = toRefs(props);
+
+        const {
+            stepRange,
+            resetIndex,
+            isFirstOrInvalid,
+            isLastOrInvalid,
+            endPage,
+            prevPage,
+            nextPage,
+            setValue
+        } = usePagination(props, { curIndex, isValid })
 
         return {
             prevPage,
