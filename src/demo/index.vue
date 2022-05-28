@@ -34,7 +34,7 @@
         </MyTable>
         <button @click="changeData">点我加载新数据</button>
         <h1>不配置分页，默认数据全部展示。 </h1>
-        <MyTable :data="data" :columns="columns" :page-able="false">
+        <MyTable :data="data" :columns="columns2" :page-able="false">
             <template #a="{ record }">
                 {{ record.a }}
             </template>

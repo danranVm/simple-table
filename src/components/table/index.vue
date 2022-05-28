@@ -14,14 +14,14 @@
         </table>
         <div :style="tableStyle" class="table_body__contaniner">
             <table class="table_body" border="1" cellspacing="0" cellpadding="0">
-                <tr v-for="(item, index) in finalData" :key="index" class="table_body__row">
+                <tr v-for="(item, index) in sortedData" :key="index" class="table_body__row">
                     <td v-for="(ele, idx) in Object.keys($slots)" class="table_body__item" :title="item[ele]">
                         <slot :record="item" :name="ele" :key="idx">
                         </slot>
                     </td>
                 </tr>
             </table>
-            <div v-if="!finalData.length">
+            <div v-if="!sortedData.length">
                 <h2>数据为空</h2>
             </div>
         </div>
@@ -52,19 +52,15 @@ export default defineComponent({
 
         const filterByStepData = computed(() => {
             const { start, end } = stepRange.value;
-            return data.value.slice(start, end)
+            return pageAble.value ? data.value.slice(start, end) : data.value
         })
 
         const sortedData = computed(() => {
-            let filterData = filterByStepData.value;
+            let filterData = filterByStepData.value
             columnList.value.find(item => {
                 item.sort && item.direction && (filterData = sortByKey(filterData, item.key, item.direction))
             })
             return filterData
-        })
-
-        const finalData = computed(() => {
-            return pageAble.value ? sortedData.value : data.value
         })
 
         const tableStyle = computed(() => ({ height: `${defaultHeight.value}px` }));
@@ -81,7 +77,7 @@ export default defineComponent({
             pagination,
             pageAble,
             DIRECTION,
-            finalData
+            sortedData
         }
     }
 })
