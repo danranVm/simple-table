@@ -50,13 +50,17 @@ export default defineComponent({
 
         const stepRange = computed(() => pagination.value?.stepRange ?? { start: 0, end: 10 });
 
+        // 根据分页器的步长过滤表格数据
         const filterByStepData = computed(() => {
             const { start, end } = stepRange.value;
+
+            // 未开启分页则返回原始数据
             return pageAble.value ? data.value.slice(start, end) : data.value
         })
 
         const sortedData = computed(() => {
-            let filterData = filterByStepData.value
+            let filterData = filterByStepData.value;
+            // 遍历colunmList，排序
             columnList.value.find(item => {
                 item.sort && item.direction && (filterData = sortByKey(filterData, item.key, item.direction))
             })

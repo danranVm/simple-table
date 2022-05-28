@@ -1,0 +1,22 @@
+// Vitest Snapshot v1
+
+exports[`mount component 1`] = `
+"<div class=\\"table\\" data-v-6ed10cf1=\\"\\">
+  <table class=\\"table_header\\" border=\\"1\\" cellspacing=\\"0\\" cellpadding=\\"0\\" data-v-6ed10cf1=\\"\\">
+    <tr class=\\"table_header__row\\" data-v-6ed10cf1=\\"\\">
+      <td class=\\"table_header__item\\" title=\\"a\\" data-v-6ed10cf1=\\"\\">a
+        <!--v-if-->
+        <!--v-if-->
+      </td>
+    </tr>
+  </table>
+  <div style=\\"height: 200px;\\" class=\\"table_body__contaniner\\" data-v-6ed10cf1=\\"\\">
+    <table class=\\"table_body\\" border=\\"1\\" cellspacing=\\"0\\" cellpadding=\\"0\\" data-v-6ed10cf1=\\"\\">
+      <tr class=\\"table_body__row\\" data-v-6ed10cf1=\\"\\"></tr>
+      <tr class=\\"table_body__row\\" data-v-6ed10cf1=\\"\\"></tr>
+    </table>
+    <!--v-if-->
+  </div>
+</div>
+<pagination-stub enable=\\"true\\" total=\\"2\\" pagesize=\\"10\\" data-v-6ed10cf1=\\"\\"></pagination-stub>"
+`;

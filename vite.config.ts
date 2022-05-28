@@ -6,15 +6,12 @@ const path = require('path')
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
-		vue(), 
+		vue(),
 		vueJsx()
 	],
 	test: {
 		globals: true,
-		environment: "jsdom",
-		transformMode: {
-			web: [/.[tj]sx$/],
-		},
+		environment: "jsdom"
 	},
 	resolve: {
 		alias: {
@@ -23,10 +20,10 @@ export default defineConfig({
 		}
 	},
 	css: {
-        preprocessorOptions: {
-            less: {
-                javascriptEnabled: true,
-            }
-        },
-    }
+		preprocessorOptions: {
+			less: {
+				javascriptEnabled: true,
+			}
+		},
+	}
 });
