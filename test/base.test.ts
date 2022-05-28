@@ -1,22 +1,34 @@
 import { shallowMount } from "@vue/test-utils";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
+import { ref } from 'vue';
 import MyTable from "../src/components/table/index.vue";
 
-test("mount component", () => {
+describe("mount table", () => {
     const wrapper = shallowMount(MyTable, {
         props: {
-            data: [
+            data: ref([
                 { 'a': 1 },
                 { 'a': 2 }
-            ],
+            ]),
             columns: [
                 {
                     title: 'a',
                     key: 'a'
                 }
-            ]
+            ],
+            defaultHeight: 500
         },
     });
+    test('data length', () => {
+        expect(wrapper.props().data.value.length).toBe(2)
+    });
 
-    expect(wrapper.html()).toMatchSnapshot();
+    test('set height', () => {
+        expect(wrapper.props().defaultHeight).toBe(500)
+    });
+
+    // 不配置pageAble默认为true
+    test('pagable', () => {
+        expect(wrapper.props().pageAble).toBe(true)
+    });
 });

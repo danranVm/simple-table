@@ -53,7 +53,6 @@ export default defineComponent({
         // 根据分页器的步长过滤表格数据
         const filterByStepData = computed(() => {
             const { start, end } = stepRange.value;
-
             // 未开启分页则返回原始数据
             return pageAble.value ? data.value.slice(start, end) : data.value
         })

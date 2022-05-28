@@ -16,14 +16,14 @@ export function useTable(
 ): PagingContext {
     const { data, columns, defaultHeight, pageAble } = toRefs(props);
     const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
-        v.direction = DIRECTION.none
-        return v
+        v.direction = DIRECTION.none;
+        return v;
     }));
     
     // 点击切换排序规则
     const onSort = (key: string, sortAble: boolean | undefined, direction: DIRECTION) => {
         if (!sortAble) {
-            return
+            return;
         }
         direction = direction ? (direction === DIRECTION.asc ? DIRECTION.desc : DIRECTION.none) : DIRECTION.asc;
         columnList.value.forEach(ele => { ele.direction = ele.key === key ? direction : DIRECTION.none })
@@ -31,6 +31,9 @@ export function useTable(
 
     // 根据columns里的key，对表格数据进行排序
     const sortByKey = (data: any[], key: string, type: DIRECTION) => {
+        if(!Array.isArray(data)){
+            window.console.warn('传入data格式非法')
+        }
         if (type === DIRECTION.none) {
             return data;
         }
