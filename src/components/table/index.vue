@@ -28,7 +28,7 @@
         </div>
 
     </div>
-    <Pagination ref="pagination" :total="data.length" :enable="pageAble" />
+    <Pagination ref="pagination" :total="data.length" :enable="pageAble" :page-size="pageSize" />
 </template>
 
 <script lang="ts">
@@ -52,9 +52,10 @@ export default defineComponent({
 
         const { onSort, sortByKey } = useTable()
 
-        const pagination = ref<PagiNation | null>(null)
+        const pagination = ref<PagiNation | null>(null);
+        const pageSize = 20
 
-        const stepRange = computed(() => pagination.value?.stepRange ?? { start: 0, end: 10 });
+        const stepRange = computed(() => pagination.value?.stepRange ?? { start: 0, end: pageSize });
 
         // 根据分页器的步长过滤表格数据
         const filterByStepData = computed(() => {
@@ -86,7 +87,8 @@ export default defineComponent({
             pagination,
             pageAble,
             DIRECTION,
-            sortedData
+            sortedData,
+            pageSize
         }
     }
 })
