@@ -27,34 +27,13 @@ export default defineComponent({
 
 </script>
 <style lang="less" scoped>
-.table {
+.table_body {
+    width: 100%;
 
-    &_body {
-        width: 100%;
-
-        // &__row {
-        //     &:first-of-type {
-        //         border-top: none;
-        //     }
-
-        //     &:nth-of-type(2n) {
-        //         background-color: #d9ecff;
-        //     }
-
-        //     &:last-of-type {
-        //         border-bottom: none;
-        //     }
-        // }
-
-        // &__item {
-        //     min-width: 80px;
-        // }
-
-        &__contaniner {
-            overflow-y: scroll;
-            border: 1px solid;
-        }
+    &__contaniner {
+        overflow-y: scroll;
+        border: 1px solid;
     }
-
 }
+
 </style>
