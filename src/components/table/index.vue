@@ -1,16 +1,16 @@
 <template>
     <div class="table">
-        <TableHeader ref="tableheader" 
-                    :columns="columns" />
-        <TableBody :data="sortedData" 
-                   :default-height="defaultHeight" 
-                   :slot-list="Object.keys($slots)">
+        <TableHeader ref="tableheader" :columns="columns" />
+        <TableBody :default-height="defaultHeight" :data-length="sortedData.length">
+            <TableRow v-for="(item, index) in sortedData" :key="index" class="table_body__row">
+                <TableCell v-for="(ele, idx) in Object.keys($slots)" class="table_body__item" :title="item[ele]">
+                    <slot :record="item" :name="ele" :key="idx">
+                    </slot>
+                </TableCell>
+            </TableRow>
         </TableBody>
     </div>
-    <Pagination ref="pagination" 
-                :total="data.length" 
-                :enable="pageAble" 
-                :page-size="pageSize" />
+    <Pagination ref="pagination" :total="data.length" :enable="pageAble" :page-size="pageSize" />
 </template>
 
 <script lang="ts">
@@ -18,6 +18,8 @@ import { computed, ref, defineComponent, watch, toRefs } from 'vue';
 import Pagination from '@components/pagination/index.vue';
 import TableHeader from '@components/table/table_header.vue';
 import TableBody from '@components/table/table_body.vue';
+import TableRow from '@components/table/table_row.vue';
+import TableCell from '@components/table/table_cell.vue';
 import type { PagiNation, StepItem } from '../pagination/types';
 import { tableProps, DIRECTION, type MyTableHeader, type colunmItemConfig } from "./types";
 import { useTable } from './useTable';
@@ -27,7 +29,9 @@ export default defineComponent({
     components: {
         TableHeader,
         Pagination,
-        TableBody
+        TableBody,
+        TableRow,
+        TableCell
     },
     setup(props) {
         const { data, columns, defaultHeight, pageAble } = toRefs(props);

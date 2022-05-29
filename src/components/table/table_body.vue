@@ -1,15 +1,9 @@
 <template>
     <div :style="tableStyle" class="table_body__contaniner">
         <table class="table_body" border="1" cellspacing="0" cellpadding="0">
-            <tr v-for="(item, index) in data" :key="index" class="table_body__row">
-                <td v-for="(ele, idx) in slotList" class="table_body__item" :title="item[ele]">
-                    <slot :record="item" :name="ele" :key="idx">
-                        {{ item[ele] }}
-                    </slot>
-                </td>
-            </tr>
+            <slot></slot>
         </table>
-        <div v-if="!data.length">
+        <div v-if="!dataLength">
             <h2>数据为空</h2>
         </div>
     </div>
@@ -22,12 +16,11 @@ export default defineComponent({
     name: 'TableBody',
     props: tableBodyProps,
     setup(props) {
-        const { data, defaultHeight, slotList } = toRefs(props);
+        const { dataLength, defaultHeight } = toRefs(props);
         const tableStyle = computed(() => ({ height: `${defaultHeight.value}px` }));
         return {
             tableStyle,
-            data,
-            slotList
+            dataLength
         }
     }
 })
@@ -39,23 +32,23 @@ export default defineComponent({
     &_body {
         width: 100%;
 
-        &__row {
-            &:first-of-type {
-                border-top: none;
-            }
+        // &__row {
+        //     &:first-of-type {
+        //         border-top: none;
+        //     }
 
-            &:nth-of-type(2n) {
-                background-color: #d9ecff;
-            }
+        //     &:nth-of-type(2n) {
+        //         background-color: #d9ecff;
+        //     }
 
-            &:last-of-type {
-                border-bottom: none;
-            }
-        }
+        //     &:last-of-type {
+        //         border-bottom: none;
+        //     }
+        // }
 
-        &__item {
-            min-width: 80px;
-        }
+        // &__item {
+        //     min-width: 80px;
+        // }
 
         &__contaniner {
             overflow-y: scroll;

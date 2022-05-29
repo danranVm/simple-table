@@ -42,19 +42,15 @@ export const tableHeaderProps = {
 }
 
 export const tableBodyProps = {
-    data: {
-        type: Array as PropType<any[]>,
-        default: () => [],
+    dataLength: {
+        type: Number as PropType<number>,
+        default: 0,
     },
     defaultHeight: {
         type: Number as PropType<number>,
         require: false,
         default: 200
     },
-    slotList: {
-        type: Array as PropType<string[]>,
-        default: () => []
-    }
 }
 
 export interface colunmItemConfig {
