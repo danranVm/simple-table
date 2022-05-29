@@ -1,61 +1,44 @@
 <template>
     <div class="table">
-        <table class="table_header" border="1" cellspacing="0" cellpadding="0">
-            <tr class="table_header__row">
-                <td v-for="item in columnList" :key="item.key"
-                    @click="onSort(columnList, item.key, item.sort, item.direction)" class="table_header__item"
-                    :title="item.title">
-                    {{ item.title }}
-                    <span v-if="item.sort" class="table_header__item_up"
-                        :class="`table_header__item_up--${item.direction === DIRECTION.asc ? 'active' : ''}`"></span>
-                    <span v-if="item.sort" class="table_header__item_down"
-                        :class="`table_header__item_down--${item.direction === DIRECTION.desc ? 'active' : ''}`"></span>
-                </td>
-            </tr>
-        </table>
-        <div :style="tableStyle" class="table_body__contaniner">
-            <table class="table_body" border="1" cellspacing="0" cellpadding="0">
-                <tr v-for="(item, index) in sortedData" :key="index" class="table_body__row">
-                    <td v-for="(ele, idx) in Object.keys($slots)" class="table_body__item" :title="item[ele]">
-                        <slot :record="item" :name="ele" :key="idx">
-                        </slot>
-                    </td>
-                </tr>
-            </table>
-            <div v-if="!sortedData.length">
-                <h2>数据为空</h2>
-            </div>
-        </div>
-
+        <TableHeader ref="tableheader" 
+                    :columns="columns" />
+        <TableBody :data="sortedData" 
+                   :default-height="defaultHeight" 
+                   :slot-list="Object.keys($slots)">
+        </TableBody>
     </div>
-    <Pagination ref="pagination" :total="data.length" :enable="pageAble" :page-size="pageSize" />
+    <Pagination ref="pagination" 
+                :total="data.length" 
+                :enable="pageAble" 
+                :page-size="pageSize" />
 </template>
 
 <script lang="ts">
 import { computed, ref, defineComponent, watch, toRefs } from 'vue';
 import Pagination from '@components/pagination/index.vue';
-import { type PagiNation } from '../pagination/types';
-import { tableProps, DIRECTION } from "./types";
+import TableHeader from '@components/table/table_header.vue';
+import TableBody from '@components/table/table_body.vue';
+import type { PagiNation, StepItem } from '../pagination/types';
+import { tableProps, DIRECTION, type MyTableHeader, type colunmItemConfig } from "./types";
 import { useTable } from './useTable';
 export default defineComponent({
     name: 'MyTable',
     props: tableProps,
     components: {
-        Pagination
+        TableHeader,
+        Pagination,
+        TableBody
     },
     setup(props) {
         const { data, columns, defaultHeight, pageAble } = toRefs(props);
-        const columnList = ref<colunmItemConfig[]>(columns.value.map((v) => {
-            v.direction = DIRECTION.none;
-            return v;
-        }));
+        const { sortByKey } = useTable();
 
-        const { onSort, sortByKey } = useTable()
-
+        const tableheader = ref<MyTableHeader | null>(null);
         const pagination = ref<PagiNation | null>(null);
         const pageSize = 20
 
-        const stepRange = computed(() => pagination.value?.stepRange ?? { start: 0, end: pageSize });
+        const stepRange = computed<StepItem>(() => pagination.value?.stepRange ?? { start: 0, end: pageSize });
+        const columnList = computed<colunmItemConfig[]>(() => tableheader.value?.columnList ?? []);
 
         // 根据分页器的步长过滤表格数据
         const filterByStepData = computed(() => {
@@ -67,13 +50,11 @@ export default defineComponent({
         const sortedData = computed(() => {
             let filterData = filterByStepData.value;
             // 遍历colunmList，排序
-            columnList.value.find(item => {
+            columnList.value.length && columnList.value.find(item => {
                 item.sort && item.direction && (filterData = sortByKey(filterData, item.key, item.direction))
             })
             return filterData
         })
-
-        const tableStyle = computed(() => ({ height: `${defaultHeight.value}px` }));
 
         // 原始数据变化，重置回第一页
         watch(data, () => {
@@ -81,89 +62,18 @@ export default defineComponent({
         })
 
         return {
-            columnList,
-            onSort,
-            tableStyle,
+            columns,
+            defaultHeight,
             pagination,
             pageAble,
             DIRECTION,
             sortedData,
+            filterByStepData,
+            tableheader,
+            columnList,
             pageSize
         }
     }
 })
 
 </script>
-<style lang="less" scoped>
-.table {
-
-    &_header {
-        width: 100%;
-
-        &__row {
-            font-weight: bold;
-            background: #d9ecff;
-            border-bottom: none;
-        }
-
-        &__item {
-            position: relative;
-            min-width: 80px;
-
-            &_up {
-                position: absolute;
-                cursor: pointer;
-                border: 4px solid transparent;
-                border-bottom-color: white;
-                top: 1px;
-                right: 4px;
-
-                &--active {
-                    border-bottom-color: black;
-                }
-            }
-
-            &_down {
-                position: absolute;
-                cursor: pointer;
-                border: 4px solid transparent;
-                bottom: 1px;
-                right: 4px;
-                border-top-color: white;
-
-                &--active {
-                    border-top-color: black;
-                }
-            }
-        }
-    }
-
-    &_body {
-        width: 100%;
-
-        &__row {
-            &:first-of-type {
-                border-top: none;
-            }
-
-            &:nth-of-type(2n) {
-                background-color: #d9ecff;
-            }
-
-            &:last-of-type {
-                border-bottom: none;
-            }
-        }
-
-        &__item {
-            min-width: 80px;
-        }
-
-        &__contaniner {
-            overflow-y: scroll;
-            border: 1px solid;
-        }
-    }
-
-}
-</style>

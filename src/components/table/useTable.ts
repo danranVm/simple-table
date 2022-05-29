@@ -1,20 +1,10 @@
-import { type colunmItemConfig, DIRECTION } from "./types";
+import { DIRECTION } from "./types";
 
-export interface PagingContext {
-    onSort: (columns: colunmItemConfig[], key: string, sortAble: boolean | undefined, direction: DIRECTION) => void;
+export interface TableContext {
     sortByKey: (data: any[], key: string, type: DIRECTION) => any[]
 }
 
-export function useTable(): PagingContext {
-
-    // 点击切换排序规则
-    const onSort = (columns: colunmItemConfig[], key: string, sortAble: boolean | undefined, direction: DIRECTION) => {
-        if (!sortAble) {
-            return;
-        }
-        direction = direction ? (direction === DIRECTION.asc ? DIRECTION.desc : DIRECTION.none) : DIRECTION.asc;
-        columns.forEach(ele => { ele.direction = ele.key === key ? direction : DIRECTION.none })
-    }
+export function useTable(): TableContext {
 
     // 根据columns里的key，对表格数据进行排序
     const sortByKey = (data: any[], key: string, type: DIRECTION) => {
@@ -37,7 +27,6 @@ export function useTable(): PagingContext {
     }
 
     return {
-        onSort,
         sortByKey
     }
 }

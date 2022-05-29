@@ -1,7 +1,11 @@
 import Table from "./table.vue";
+import TableHeader from './table_header.vue';
+import TableBody from './table_body.vue';
 import { PropType, ExtractPropTypes } from 'vue'
 
 export type MyTable = typeof Table;
+export type MyTableHeader = typeof TableHeader;
+export type MyTableBody = typeof TableBody
 
 export enum DIRECTION {
     desc = 'DESC',
@@ -30,6 +34,29 @@ export const tableProps = {
     },
 }
 
+export const tableHeaderProps = {
+    columns: {
+        type: Array as PropType<colunmItemConfig[]>,
+        default: () => []
+    }
+}
+
+export const tableBodyProps = {
+    data: {
+        type: Array as PropType<any[]>,
+        default: () => [],
+    },
+    defaultHeight: {
+        type: Number as PropType<number>,
+        require: false,
+        default: 200
+    },
+    slotList: {
+        type: Array as PropType<string[]>,
+        default: () => []
+    }
+}
+
 export interface colunmItemConfig {
     title: string;
     key: string;
@@ -40,3 +67,5 @@ export interface colunmItemConfig {
 }
 
 export type TableProps = ExtractPropTypes<typeof tableProps>
+export type TableHeaderProps = ExtractPropTypes<typeof tableHeaderProps>
+export type TableBodyProps = ExtractPropTypes<typeof tableBodyProps>
